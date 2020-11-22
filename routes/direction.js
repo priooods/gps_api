@@ -7,8 +7,6 @@ router.post("/user", (req, res, next) => {
     nama: req.body.nama,
     poslat: req.body.poslat,
     poslng: req.body.poslng,
-    deslat: req.body.deslat,
-    deslng: req.body.deslng,
     tujuan: req.body.tujuan
   });
 
