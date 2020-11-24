@@ -30,7 +30,9 @@ app.use(bodyParser.json());
 app.use("/api", routeUser);
 http.listen(8080, () => console.log("Server Running"));
 
+var connections = [];
 io.on('connection', (socket) => {
+  connections.push(socket);
   console.log('a user connected' + " " + socket.id);
 
   let previousId;
@@ -41,19 +43,22 @@ io.on('connection', (socket) => {
   };
 
   //Getting Cordinat from UserGPS
-  socket.on('cord', (data) => {
-    console.log(data);
-    socket.emit('cordup', data);
+  socket.on('cord', (datas) => {
+    io.emit('cordinate.user', datas );
   })
 
   //Sending Tujuan from AdminGps
-  socket.emit('tujuan', data);
+  socket.on('tujuan.to', (data) => {
+    io.emit('update', data);
+  })
 
-  socket.on('disconnect', function(userId) {
-    safeJoin(userId);
-    if (admin===socket.id){
-      admin = "none";
-    }
-    console.log('user disconnected' + socket.id);
+  setInterval(()=> {
+    socket.emit('jumlah', connections.length);
+  }, 5000)
+
+  socket.on('disconnect', () => {
+    connections.splice(connections.indexOf(socket), 1)
+    console.log(connections.length);
+    console.log('user disconnected ' + socket.id);
   });
 });
